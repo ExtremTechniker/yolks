@@ -69,5 +69,16 @@ fi
 MODIFIED_STARTUP=$(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 echo -e ":/home/container$ ${MODIFIED_STARTUP}"
 
+
+_term() { 
+  echo "Caught SIGTERM signal!" 
+  kill -TERM "$child" 2>/dev/null
+}
+
+trap _term SIGTERM
+
+
 # Run the Server
-eval ${MODIFIED_STARTUP}
+eval ${MODIFIED_STARTUP} &
+child=$!
+wait "$child"
